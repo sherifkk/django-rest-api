@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class user(models.Model):
+class User(models.Model):
     name     = models.CharField(max_length=100)
     email    = models.CharField(max_length=100)
     password = models.TextField()
@@ -10,9 +10,9 @@ class user(models.Model):
     def __str__(self):
         return self.name
 
-class message(models.Model):
-    from_user = models.ForeignKey(user, related_name='to_user')
-    to_user   = models.ForeignKey(user, related_name='from_user')
+class Message(models.Model):
+    from_user = models.ForeignKey(User, related_name='to_user')
+    to_user   = models.ForeignKey(User, related_name='from_user')
     title     = models.CharField(max_length=100)
     message   = models.CharField(max_length=1000)
     sentat    = models.DateTimeField(auto_now_add=True)
