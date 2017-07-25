@@ -20,7 +20,10 @@ from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^register/$', views.Register.as_view()),
-    url(r'^login/$', views.Login.as_view()),
+    url(r'^admin$', admin.site.urls),
+    url(r'^register$', views.Register.as_view()),
+    url(r'^login$', views.Login.as_view()),
+    url(r'^users$', views.Users.as_view()),
+    url(r'^update/(?P<id>[0-9]+)$', views.Update.as_view()),
+    url(r'^sendmessage$', views.Message.as_view()),
 ]

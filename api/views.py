@@ -1,5 +1,5 @@
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer,MessageSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -24,20 +24,50 @@ class Register(APIView):
 
 class Login(APIView):
     def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.filter(email=serializer.validated_data['email'],password=serializer.validated_data['password']);
-            if user.exists():
-                data = {
-                    'error'  : False,
-                    'message': "User has been authenticated successfully",
-                    'user'   : serializer.data
-                }
+        users = User.objects.filter(email=request.POST['email'],password=request.POST['password']);
+        if users.exists():
+            serializer = UserSerializer(users, many=True)
+            data = {
+                'error'  : False,
+                'message': "User has been authenticated successfully",
+                'user'   : serializer.data
+            }
+        else:
+            data = {
+                'error'  : True,
+                'message': "Invalid email or password"
+            }
+        return Response(data)
 
-            else:
-                data = {
-                    'error'  : True,
-                    'message': "Invalid email or password"
-                }
+class Users(APIView):
+    def get(self, request, format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response({'users':serializer.data})
+
+class Update(APIView):
+    def post(self, request, id, format=None):
+        user = User.objects.get(id=id)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = {
+                    'error'  : False,
+                    'message': "Updated successfully",
+                    'user'   : serializer.data
+            }
+            return Response(data)
+        return Response(serializer.errors)
+
+class Message(APIView):
+    def post(self, request, format=None):
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = {
+                'error'  : False,
+                'message': "Message sent successfully",
+                'user'   : serializer.data
+            }
             return Response(data)
         return Response(serializer.errors)
